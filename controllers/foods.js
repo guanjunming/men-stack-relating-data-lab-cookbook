@@ -34,16 +34,20 @@ const getItems = async (req, res) => {
 
 const deleteItem = async (req, res) => {
   try {
-    const result = await User.updateOne(
-      { _id: req.decoded._id },
-      { $pull: { pantry: { _id: req.params.itemId } } }
-    );
-
-    if (result.modifiedCount > 0) {
-      res.json({ message: "Item deleted from user's pantry" });
-    } else {
-      res.status(404).json({ error: "Item not found in user's pantry" });
+    const user = await User.findById(req.decoded._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    const item = user.pantry.id(req.params.itemId);
+    if (!item) {
+      return res.status(404).json({ error: "Item not found in user's pantry" });
+    }
+
+    user.pantry.pull({ _id: req.params.itemId });
+    await user.save();
+
+    res.json({ message: "Item deleted from user's pantry" });
   } catch (error) {
     console.error(error.message);
     res.status(400).json({ error: "Error deleting pantry item" });
