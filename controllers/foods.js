@@ -1,8 +1,8 @@
-const User = require("../models/user.js");
+const User = require("../models/Users.js");
 
 const createItem = async (req, res) => {
   try {
-    const user = await User.findById(req.decoded._id);
+    const user = await User.findOne({ username: req.decoded.username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -20,7 +20,7 @@ const createItem = async (req, res) => {
 
 const getItems = async (req, res) => {
   try {
-    const user = await User.findById(req.decoded._id);
+    const user = await User.findOne({ username: req.decoded.username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -34,7 +34,7 @@ const getItems = async (req, res) => {
 
 const deleteItem = async (req, res) => {
   try {
-    const user = await User.findById(req.decoded._id);
+    const user = await User.findOne({ username: req.decoded.username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -56,7 +56,7 @@ const deleteItem = async (req, res) => {
 
 const updateItem = async (req, res) => {
   try {
-    const user = await User.findById(req.decoded._id);
+    const user = await User.findOne({ username: req.decoded.username });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
