@@ -4,9 +4,10 @@ const app = express();
 const morgan = require("morgan");
 
 const connectDB = require("./db/db.js");
+const isSignedIn = require("./middleware/is-signed-in.js");
 const authRouter = require("./routers/auth.js");
 const foodsRouter = require("./routers/foods.js");
-const isSignedIn = require("./middleware/is-signed-in.js");
+const usersRouter = require("./routers/users.js");
 
 connectDB();
 
@@ -17,6 +18,7 @@ app.use(morgan("dev"));
 app.use("/auth", authRouter);
 app.use(isSignedIn);
 app.use("/users/foods", foodsRouter);
+app.use("/users", usersRouter);
 
 const PORT = process.env.PORT ? process.env.PORT : "5001";
 

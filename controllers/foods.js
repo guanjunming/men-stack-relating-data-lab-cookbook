@@ -7,11 +7,10 @@ const createItem = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const item = { name: req.body.name };
-    user.pantry.push(item);
-
+    user.pantry.push(req.body);
     await user.save();
-    res.json({ message: "Item added to user's pantry" });
+
+    res.json({ message: "Item added to pantry" });
   } catch (error) {
     console.error(error.message);
     res.status(400).json({ error: "Error adding pantry item" });
@@ -41,13 +40,13 @@ const deleteItem = async (req, res) => {
 
     const item = user.pantry.id(req.params.itemId);
     if (!item) {
-      return res.status(404).json({ error: "Item not found in user's pantry" });
+      return res.status(404).json({ error: "Item not found in pantry" });
     }
 
     user.pantry.pull({ _id: req.params.itemId });
     await user.save();
 
-    res.json({ message: "Item deleted from user's pantry" });
+    res.json({ message: "Item deleted from pantry" });
   } catch (error) {
     console.error(error.message);
     res.status(400).json({ error: "Error deleting pantry item" });
@@ -63,7 +62,7 @@ const updateItem = async (req, res) => {
 
     const item = user.pantry.id(req.params.itemId);
     if (!item) {
-      return res.status(404).json({ error: "Item not found in user's pantry" });
+      return res.status(404).json({ error: "Item not found in pantry" });
     }
 
     item.set(req.body);
