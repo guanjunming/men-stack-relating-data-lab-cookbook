@@ -1,24 +1,26 @@
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
-const methodOverride = require('method-override');
-const morgan = require('morgan');
-const session = require('express-session');
+const mongoose = require("mongoose");
+const methodOverride = require("method-override");
+const morgan = require("morgan");
+const session = require("express-session");
+const isSignedIn = require("./middleware/is-signed-in.js");
+const authRouter = require("./routers/auth.js");
+const foodsRouter = require("./routers/foods.js");
 
-const authController = require('./controllers/auth.js');
-
-const port = process.env.PORT ? process.env.PORT : '3000';
+const port = process.env.PORT ? process.env.PORT : "3000";
 
 mongoose.connect(process.env.MONGODB_URI);
 
-mongoose.connection.on('connected', () => {
+mongoose.connection.on("connected", () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(methodOverride('_method'));
+app.use(methodOverride("_method"));
 // app.use(morgan('dev'));
 app.use(
   session({
@@ -28,21 +30,23 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  res.render('index.ejs', {
+app.get("/", (req, res) => {
+  res.render("index.ejs", {
     user: req.session.user,
   });
 });
 
-app.get('/vip-lounge', (req, res) => {
+app.get("/vip-lounge", (req, res) => {
   if (req.session.user) {
     res.send(`Welcome to the party ${req.session.user.username}.`);
   } else {
-    res.send('Sorry, no guests allowed.');
+    res.send("Sorry, no guests allowed.");
   }
 });
 
-app.use('/auth', authController);
+app.use("/auth", authRouter);
+app.use(isSignedIn);
+app.use("/users/foods", foodsRouter);
 
 app.listen(port, () => {
   console.log(`The express app is ready on port ${port}!`);
